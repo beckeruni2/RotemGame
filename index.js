@@ -64,15 +64,24 @@ const  deckOfCards= [
 
 
 
-    const myButton = document.getElementById('startButton');
+    
     const messageArea = document.getElementById('messageArea');
 
-    myButton.addEventListener('click', function() {
+    document.getElementById('startButton').addEventListener('click', function() {
+        this.disabled = true;
         messageArea.textContent = 'Good luck!';
+
+        
+        const cardArea = document.getElementById('deckPosition');
+        cardArea.innerHTML = `<img src="Images/back/bicycle_blue@1x.png" alt="randomBack" />`;
+        // update deck count display
+        const deckCountEl = document.getElementById('deckCount');
+        if (deckCountEl) deckCountEl.textContent = String(deckOfCards.length);
         for(let i=1; i<=6; i++){
         const drawnCard = drawRandomCard(deckOfCards);
         console.log(drawnCard.imagePath);
         renderCardToArea(drawnCard, 'card'+i);
+        if (deckCountEl) deckCountEl.textContent = String(deckOfCards.length);
         }
     });
 
