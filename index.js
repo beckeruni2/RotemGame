@@ -3,10 +3,10 @@
 //window.alert('This is an alert');
 
 console.log('Card Deck App Initialized');
+lives = 6;
 
 
-
-const  deckOfCards= [
+const  masterDeck= [
     {id: 1, name: '2club', imagePath: 'Images/face/2C@1x.png'},
     {id: 2, name: '2diamond', imagePath: 'Images/face/2D@1x.png'},
     {id: 3, name: '2heart', imagePath: 'Images/face/2H@1x.png'},
@@ -64,26 +64,42 @@ const  deckOfCards= [
 
 
 
-    
+    let deckOfCards = [];
     const messageArea = document.getElementById('messageArea');
-
-    document.getElementById('startButton').addEventListener('click', function() {
+    const startbutton = document.getElementById('startButton');
+    startbutton.addEventListener('click', function() {
         this.disabled = true;
         messageArea.textContent = 'Good luck!';
 
+        startGame();
         
-        const cardArea = document.getElementById('deckPosition');
-        cardArea.innerHTML = `<img src="Images/back/bicycle_blue@1x.png" alt="randomBack" />`;
+        });
+
+function startGame() {
+    // reset deck
+    deckOfCards = [...masterDeck];
+    lives = 6;
+    // clear all card areas
+    for(let i=1; i<=6; i++){
+        const cardArea = document.getElementById('card'+i);
+        cardArea.innerHTML = `Card ${i}`;
+        cardArea.dataset.cardId = '';
+    }
+
+    const cardArea = document.getElementById('deckPosition');
+        // add the back image without removing the deck-count element
+        cardArea.insertAdjacentHTML('afterbegin', `<img src="Images/back/bicycle_blue@1x.png" alt="randomBack" />`);
         // update deck count display
-        const deckCountEl = document.getElementById('deckCount');
-        if (deckCountEl) deckCountEl.textContent = String(deckOfCards.length);
+        const deckCount = document.getElementById('deckCount');
+        if (deckCount) deckCount.textContent = String(deckOfCards.length);
         for(let i=1; i<=6; i++){
         const drawnCard = drawRandomCard(deckOfCards);
         console.log(drawnCard.imagePath);
         renderCardToArea(drawnCard, 'card'+i);
-        if (deckCountEl) deckCountEl.textContent = String(deckOfCards.length);
+        if (deckCount) deckCount.textContent = String(deckOfCards.length);
         }
-    });
+    }
+
 
 
 
@@ -96,8 +112,110 @@ function drawRandomCard(cards) {
 
 function renderCardToArea(card, cardAreaId) {
     const cardArea = document.getElementById(cardAreaId);
-    cardArea.innerHTML = `<img src="${card.imagePath}" alt="${card.name}" />`;
+    // store card id on the container so we can identify it later
+    cardArea.dataset.cardId = card.id;
+    cardArea.innerHTML = `<img src="${card.imagePath}" alt="${card.id}" />`;
 }
 
+function getCardIdFromArea(cardAreaOrId) {
+    const el = typeof cardAreaOrId === 'string' ? document.getElementById(cardAreaOrId) : cardAreaOrId;
+    if (!el) return null;
+    const raw = el.dataset.cardId;
+    return raw === undefined ? null : (raw === '' ? null : Number(raw));
+}
 
+// attach a single click listener to the grid (delegation)
+const cardGrid = document.querySelector('.card-grid');
+if (cardGrid) {
+    document.addEventListener('click', (e) => {
+        const cell = e.target.closest('.card-grid > div');
+        if (!cell) {
+            console.log('Clicked outside a card cell');
+            return;
+        }
+        const img = cell.querySelector('img');
+        // determine whether click was on top or bottom half
+        const rect = cell.getBoundingClientRect();
+        const y = e.clientY - rect.top; // distance from top of cell in px
+        const halfName = y < rect.height / 2 ? 'top' : 'bottom';
+        if (img !== null && img.alt !== 'randomBack') {
+            executeMove(cell, halfName);
+            const cardId = cell.dataset.cardId;
+            console.log('Facing-up card clicked:', { cellId: cell.id, cardId, half: halfName });
+            // handle top/bottom click here
+        } else {
+            console.log('Clicked an empty or face-down cell:', { cellId: cell.id, half: halfName });
+        }
+    });
+}
 
+function showBackOn(target) {
+        target.dataset.cardId = '';
+        target.innerHTML = `<img src="Images/back/bicycle_blue@1x.png" alt="randomBack" />`;
+    }
+function executeMove(cell, halfName) {
+    deckCount = document.getElementById('deckCount');
+    deckCount.textContent = deckCount.textContent - 1;
+    const newCard = drawRandomCard(deckOfCards);
+    console.log('Drawn card for move:', newCard ? newCard.name : null);
+    if (!newCard) {
+        console.log('No more cards in the deck!');
+        return;
+    }
+
+    const otherCardId = getCardIdFromArea(cell); // number or null
+
+    
+
+    if (halfName === 'top') {
+        // allow placing if empty (otherCardId === null) or other card id is smaller
+        if (otherCardId === null || !firstBiggerThan(newCard.id, otherCardId)) {
+            renderCardToArea(newCard, cell.id);
+            console.log('Success! Move executed: placed card', newCard.id, 'on', cell.id);
+
+        } else {
+            console.log('Fail! Invalid move: cannot place card', newCard.id, 'on', cell.id);
+            lives = lives - 1;
+            if (lives == 0){
+                endGame();
+            }
+            showBackOn(cell);
+        }
+    } else { // bottom
+        // allow placing if empty or other card id is larger
+        if (otherCardId === null || !firstSmallerThan(newCard.id, otherCardId)) {
+            renderCardToArea(newCard, cell.id);
+            console.log('Success! Move executed: placed card', newCard.id, 'on', cell.id);
+        } else {
+            console.log('Fail! Invalid move: cannot place card', newCard.id, 'on', cell.id);
+            lives = lives - 1;
+            if (lives == 0){
+                endGame();
+            }
+            showBackOn(cell);
+        }
+    }
+}
+
+function firstBiggerThan(firstCardId, secondCardId) {
+    if (firstCardId === null || secondCardId === null) return false;
+    if(firstCardId > (secondCardId + secondCardId%4))
+    {
+        return true;
+    }
+    return false;
+}
+
+function firstSmallerThan(firstCardId, secondCardId) {
+    if (firstCardId === null || secondCardId === null) return false;
+    if(firstCardId < (secondCardId - secondCardId%4))
+    {
+        return true;
+    }   
+    return false;
+}
+
+function endGame() {
+    messageArea.textContent = 'Game Over! No lives left.';
+    startbutton.disabled = false;
+}
