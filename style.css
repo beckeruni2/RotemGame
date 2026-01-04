@@ -1,0 +1,90 @@
+:root{
+    --card-height: 220px;
+    --card-width: 157px;
+    --card-horizontal-space: 1000px;
+}
+body{
+    height: 100vh;
+}
+main{
+    height: 55%;
+    display: flex;
+    justify-content: center;
+    border: 1px solid black;
+}
+
+.card-container{
+    height: 100%;
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(3, auto);
+    grid-auto-rows: auto;
+    gap: 12px;
+    justify-content: center;
+    
+}
+
+/* Apply a border and sizing to each card cell regardless of its class name */
+.card-container > div{
+    border: 1px solid black;
+    width: var(--card-width);
+    height: var(--card-height);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    background-color: grey;
+}
+
+
+.card{
+    position: relative;
+    height: var(--card-height);
+    width: var(--card-width);
+    perspective: 1000px;
+    cursor: pointer;
+}
+.card-inner{
+    position:relative;
+    height:100%;
+    width:100%;
+    text-align: center;
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+}
+.card-front, .card-back{
+    position:absolute;
+    height:100%;
+    -webkit-backface-visibility: hidden;
+    width:100%;
+    backface-visibility: hidden;
+    border-radius: 10px;
+}
+.card-img{
+    height:100%;
+}
+
+.card-back{
+    transform: rotateY(180deg);
+}
+.card:hover .card-inner{
+    transform: rotateY(180deg);
+}
+
+.my-button {
+    background-color: #4CAF50; /* Green background */
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    cursor: pointer; /* Changes cursor to a hand on hover */
+    border-radius: 8px;
+    transition: background-color 0.3s; /* Smooth transition for color change */
+}
+
+.my-button:hover {
+    background-color: #45a049; /* Slightly darker green on hover */
+}
