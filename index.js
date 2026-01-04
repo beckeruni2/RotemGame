@@ -162,6 +162,7 @@ function executeMove(cell, halfName) {
         console.log('No more cards in the deck!');
         return;
     }
+    renderCardToArea(newCard, 'chosenCard');
 
     const otherCardId = getCardIdFromArea(cell); // number or null
 
@@ -169,7 +170,7 @@ function executeMove(cell, halfName) {
 
     if (halfName === 'top') {
         // allow placing if empty (otherCardId === null) or other card id is smaller
-        if (otherCardId === null || !firstBiggerThan(newCard.id, otherCardId)) {
+        if (otherCardId === null || firstBiggerThan(newCard.id, otherCardId)) {
             renderCardToArea(newCard, cell.id);
             console.log('Success! Move executed: placed card', newCard.id, 'on', cell.id);
 
@@ -183,7 +184,7 @@ function executeMove(cell, halfName) {
         }
     } else { // bottom
         // allow placing if empty or other card id is larger
-        if (otherCardId === null || !firstSmallerThan(newCard.id, otherCardId)) {
+        if (otherCardId === null || firstSmallerThan(newCard.id, otherCardId)) {
             renderCardToArea(newCard, cell.id);
             console.log('Success! Move executed: placed card', newCard.id, 'on', cell.id);
         } else {
@@ -219,3 +220,16 @@ function endGame() {
     messageArea.textContent = 'Game Over! No lives left.';
     startbutton.disabled = false;
 }
+
+
+document.querySelectorAll('.card-grid > div').forEach(el => {
+  el.addEventListener('mousemove', e => {
+    const rect = el.getBoundingClientRect();
+    const isTop = (e.clientY - rect.top) < rect.height / 2;
+    el.classList.toggle('highlight-top', isTop);
+    el.classList.toggle('highlight-bottom', !isTop);
+  });
+  el.addEventListener('mouseleave', () => {
+    el.classList.remove('highlight-top', 'highlight-bottom');
+  });
+});

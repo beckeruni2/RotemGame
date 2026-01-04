@@ -1,16 +1,7 @@
-root{
-    --card-height: 220px;
-    --card-width: 157px;
-    --card-horizontal-space: 1000px;
 
-}
 body{
     height: 90vh;
 }
-
-
-
-
 
 
 .card-container{
@@ -104,40 +95,113 @@ body{
     grid-template-rows: repeat(2, 1fr);
     gap: 12px;
 }
+
+.card-grid > div {
+    position: relative;
+    height: var(--card-height);
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,0.06);
+}
+
+/* dashed center line */
+.card-grid > div::after {
+    content: "";
+    position: absolute;
+    left: 8px;
+    right: 8px;
+    top: 50%;
+    border-top: 2px dashed rgba(0,0,0,0.6);
+    transform: translateY(-50%);
+    pointer-events: none;
+    z-index: 5;
+}
+
+/* translucent overlay used to highlight top or bottom half */
+.card-grid > div::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 50%;
+    background: rgba(255,255,255,0.12);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 120ms ease;
+    z-index: 4;
+}
+
+/* show overlay on hover */
+.card-grid > div:hover::before {
+    opacity: 1;
+}
+
+/* helper classes to highlight top/bottom explicitly */
+.card-grid > div.highlight-top::before {
+    top: 0;
+    height: 50%;
+    opacity: 1;
+}
+.card-grid > div.highlight-bottom::before {
+    top: 50%;
+    height: 50%;
+    opacity: 1;
+}
+
+/* ensure images sit below the overlays/line */
+.card-grid > div img {
+    position: relative;
+    z-index: 1;
+}
 .deck{
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative; /* allow absolute children */
+    margin-bottom: 50px; /* space from card grid below */
+    transform: translateY(300px);
 }
 
-
+.chosen-card{
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: calc(100% + 8px); /* sits just above .deck-pos; adjust gap */
+    z-index: 20;
+    /* keep size/style from before */
+    height: var(--card-height);
+    width: var(--card-width);
+    box-sizing: border-box;
+    overflow: hidden;
+    cursor: pointer;
+}
+/* ensure deck-pos stays below the chosen card */
 .deck-pos {
-            position: relative; 
-            border: 1px solid black;
-            display: flex;
-            height: var(--card-height);
-            width: var(--card-width);
-            align-items: center;
-            justify-content: center;
-            box-sizing: border-box;
-            background-color: #2c3e50;
-            border-radius: 8px;
-            overflow: hidden;
-            cursor: pointer;
-        }
+    position: relative;
+    z-index: 10;
+    width: var(--card-width);   /* added */
+    height: var(--card-height); /* added */
+}
 
-
+/* center the count inside .deck-pos */
 .deck-count {
-            position: absolute;
-            z-index: 2;
-            background-color: rgba(255, 255, 255, 0.85);
-            color: #333;
-            font-weight: bold;
-            font-size: 24px;
-            padding: 8px 12px;
-            border-radius: 50%;
-            border: 2px solid #333;
-            pointer-events: none; /* Allows clicks to pass through to the deck */
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-        }
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    background-color: rgba(255, 255, 255, 0.85);
+    color: #333;
+    font-weight: bold;
+    font-size: 24px;
+    padding: 8px 12px;
+    border-radius: 50%;
+    border: 2px solid #333;
+    pointer-events: none;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+}
 
