@@ -65,6 +65,8 @@ const  masterDeck= [
 
 
     let deckOfCards = [];
+    let countingCards = 0;
+    let lives = 9;
     const messageArea = document.getElementById('messageArea');
     const startbutton = document.getElementById('startButton');
     startbutton.addEventListener('click', function() {
@@ -102,6 +104,7 @@ function startGame() {
         renderCardToArea(drawnCard, 'card'+i);
         if (deckCount) deckCount.textContent = String(deckOfCards.length);
         }
+        updateDeckVisual();
     }
 
 
@@ -112,17 +115,19 @@ function drawRandomCard(cards) {
 
     const randomIndex = Math.floor(Math.random() * cards.length);
     const removedCard = cards.splice(randomIndex, 1);
+    updateCountingDisplay(removedCard[0]);
     return removedCard[0];
 }
 
 function renderCardToArea(card, cardAreaId) {
-    if(card.id <= 20) countingCards--;
-    if(card.id >=33) countingCards++;
-    const countingDisplay = document.getElementById('countingDisplay');
-    countingDisplay.textContent = String(countingCards);
     const cardArea = document.getElementById(cardAreaId);
     // store card id on the container so we can identify it later
     cardArea.dataset.cardId = card.id;
+    if(cardAreaId === 'chosenCard'){
+        const imgContainer = cardArea.querySelector('.chosen-card-image');
+        imgContainer.innerHTML = `<img src="${card.imagePath}" alt="${card.id}" />`;
+        return;
+    }
     cardArea.innerHTML = `<img src="${card.imagePath}" alt="${card.id}" />`;
 }
 
@@ -171,6 +176,7 @@ function executeMove(cell, halfName) {
         console.log('No more cards in the deck!');
         return;
     }
+    updateDeckVisual();
     renderCardToArea(newCard, 'chosenCard');
     const otherCardId = getCardIdFromArea(cell); // number or null
 
@@ -241,3 +247,14 @@ document.querySelectorAll('.card-grid > div').forEach(el => {
     el.classList.remove('highlight-top', 'highlight-bottom');
   });
 });
+
+
+function updateDeckVisual(){
+    const deckCount = document.getElementById('deckCount');
+    if (deckCount) deckCount.textContent = String(deckOfCards.length);
+}
+function updateCountingDisplay(card) {
+    if(card.id <= 20) countingCards--;
+    if(card.id >=33) countingCards++;
+    document.getElementById('countingDisplay').textContent = countingCards;
+}
