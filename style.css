@@ -1,11 +1,11 @@
 
 body{
-    height: 90vh;
+    height: 95vh;
 }
 
 
 .card-container{
-    height: 100%;
+    height: 110%;
     display: grid;
     grid-template-columns: auto 1fr;
     gap: 12px;
@@ -92,7 +92,7 @@ body{
 .card-grid{
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(2, 1fr);
+    grid-template-rows: repeat(3, 1fr);
     gap: 12px;
 }
 
@@ -165,19 +165,32 @@ body{
     margin-bottom: 50px; /* space from card grid below */
     transform: translateY(300px);
 }
+.card-counting-display {
+    position: absolute;
+    top: -60px;          /* 👈 30px above chosen-card */
+    left: 50%;
+    transform: translateX(-50%);
+
+    background: rgba(170, 23, 23, 0.9);
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-weight: bold;
+    z-index: 30;
+}
+
 
 .chosen-card{
-    position: absolute;
+    position: relative;
     left: 50%;
     transform: translateX(-50%);
     bottom: calc(100% + 8px); /* sits just above .deck-pos; adjust gap */
     z-index: 20;
     /* keep size/style from before */
-    height: var(--card-height);
-    width: var(--card-width);
+
     box-sizing: border-box;
-    overflow: hidden;
+    overflow: visible;
     cursor: pointer;
+
 }
 /* ensure deck-pos stays below the chosen card */
 .deck-pos {
@@ -191,7 +204,7 @@ body{
 .deck-count {
     position: absolute;
     top: 50%;
-    left: 50%;
+    left: 75%;
     transform: translate(-50%, -50%);
     z-index: 2;
     background-color: rgba(255, 255, 255, 0.85);

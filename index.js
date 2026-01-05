@@ -3,7 +3,7 @@
 //window.alert('This is an alert');
 
 console.log('Card Deck App Initialized');
-lives = 6;
+
 
 
 const  masterDeck= [
@@ -78,9 +78,11 @@ const  masterDeck= [
 function startGame() {
     // reset deck
     deckOfCards = [...masterDeck];
-    lives = 6;
+    lives = 9;
+    countingCards = 0;
+    
     // clear all card areas
-    for(let i=1; i<=6; i++){
+    for(let i=1; i<=9; i++){
         const cardArea = document.getElementById('card'+i);
         cardArea.innerHTML = `Card ${i}`;
         cardArea.dataset.cardId = '';
@@ -91,8 +93,10 @@ function startGame() {
         cardArea.insertAdjacentHTML('afterbegin', `<img src="Images/back/bicycle_blue@1x.png" alt="randomBack" />`);
         // update deck count display
         const deckCount = document.getElementById('deckCount');
+        const countingDisplay = document.getElementById('countingDisplay');
+        countingDisplay.textContent = '0';
         if (deckCount) deckCount.textContent = String(deckOfCards.length);
-        for(let i=1; i<=6; i++){
+        for(let i=1; i<=9; i++){
         const drawnCard = drawRandomCard(deckOfCards);
         console.log(drawnCard.imagePath);
         renderCardToArea(drawnCard, 'card'+i);
@@ -105,12 +109,17 @@ function startGame() {
 
 function drawRandomCard(cards) {
     if (cards.length === 0) return null;
+
     const randomIndex = Math.floor(Math.random() * cards.length);
     const removedCard = cards.splice(randomIndex, 1);
     return removedCard[0];
 }
 
 function renderCardToArea(card, cardAreaId) {
+    if(card.id <= 20) countingCards--;
+    if(card.id >=33) countingCards++;
+    const countingDisplay = document.getElementById('countingDisplay');
+    countingDisplay.textContent = String(countingCards);
     const cardArea = document.getElementById(cardAreaId);
     // store card id on the container so we can identify it later
     cardArea.dataset.cardId = card.id;
@@ -163,7 +172,6 @@ function executeMove(cell, halfName) {
         return;
     }
     renderCardToArea(newCard, 'chosenCard');
-
     const otherCardId = getCardIdFromArea(cell); // number or null
 
     
