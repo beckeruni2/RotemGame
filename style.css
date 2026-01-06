@@ -248,3 +248,29 @@ body{
   to   { transform: translateY(0) scale(1); opacity: 1; }
 }
 
+
+@media (max-width: 480px) {
+  :root {
+    --card-width: 70px;
+    --card-height: 102px;
+  }
+
+  body {
+    min-height: 100svh;
+  }
+
+  .deck {
+    transform: none;
+    margin: 12px 0;
+  }
+
+  .card-container {
+    grid-template-columns: 1fr;
+  }
+
+  .card-grid {
+    gap: 8px;
+  }
+}
+
+
