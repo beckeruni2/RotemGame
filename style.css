@@ -19,8 +19,10 @@ body{
     display: flex;
     height: var(--card-height);
     width: var(--card-width);
-    align-items: center;
-    justify-content: center;
+    body{
+         min-height: 100svh;
+         margin: 0;
+    }
     box-sizing: border-box;
     background-color: grey;
 }
@@ -115,7 +117,7 @@ body{
     right: 8px;
     top: 50%;
     border-top: 2px dashed rgba(0,0,0,0.6);
-    transform: translateY(-50%);
+    /*transform: translateY(-50%);*/
     pointer-events: none;
     z-index: 5;
 }
