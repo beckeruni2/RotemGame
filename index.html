@@ -42,6 +42,15 @@
     </div>
     </div>
 </main>
+    <!-- Win overlay (hidden by default) -->
+    <div id="winScreen" class="win-screen hidden" aria-hidden="true">
+        <div class="win-content">
+            <h2>Congratulations — You Win!</h2>
+            <p id="winMessage">Rotem is proud of you!</p>
+            <button id="playAgain" class="my-button">Play Again</button>
+        </div>
+        <canvas id="confettiCanvas" class="confetti-canvas"></canvas>
+    </div>
     <script src="index.js"></script>
 </body>
 </html>

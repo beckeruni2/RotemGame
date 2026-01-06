@@ -59,6 +59,7 @@ const  masterDeck= [
     {id: 50, name: 'Adiamond', imagePath: 'Images/face/AD@1x.png'},
     {id: 51, name: 'Aheart', imagePath: 'Images/face/AH@1x.png'},
     {id: 52, name: 'Aspade', imagePath: 'Images/face/AS@1x.png'}
+    
 ]
 
 
@@ -187,6 +188,10 @@ function executeMove(cell, halfName) {
         if (otherCardId === null || firstBiggerThan(newCard.id, otherCardId)) {
             renderCardToArea(newCard, cell.id);
             console.log('Success! Move executed: placed card', newCard.id, 'on', cell.id);
+            if(deckOfCards.length === 0){
+                startbutton.disabled = false;
+                showWinScreen('Rotem would be proud of you!');
+            }
 
         } else {
             console.log('Fail! Invalid move: cannot place card', newCard.id, 'on', cell.id);
@@ -201,6 +206,11 @@ function executeMove(cell, halfName) {
         if (otherCardId === null || firstSmallerThan(newCard.id, otherCardId)) {
             renderCardToArea(newCard, cell.id);
             console.log('Success! Move executed: placed card', newCard.id, 'on', cell.id);
+            if(deckOfCards.length === 0){
+
+                startbutton.disabled = false;
+                showWinScreen('Rotem would be proud of you!');
+            }
         } else {
             console.log('Fail! Invalid move: cannot place card', newCard.id, 'on', cell.id);
             lives = lives - 1;
@@ -257,4 +267,73 @@ function updateCountingDisplay(card) {
     if(card.id <= 20) countingCards--;
     if(card.id >=33) countingCards++;
     document.getElementById('countingDisplay').textContent = countingCards;
+}
+
+// --- Win screen & confetti ---
+let _confetti = { raf: null, particles: [], canvas: null, ctx: null, timer: null };
+function showWinScreen(msg){
+    const win = document.getElementById('winScreen');
+    const winMessage = document.getElementById('winMessage');
+    if(winMessage) winMessage.textContent = msg || '';
+    if(win) win.classList.remove('hidden');
+    startConfetti();
+}
+function hideWinScreen(){
+    const win = document.getElementById('winScreen');
+    if(win) win.classList.add('hidden');
+    stopConfetti();
+}
+
+function startConfetti(){
+    const canvas = document.getElementById('confettiCanvas');
+    if(!canvas) return;
+    _confetti.canvas = canvas;
+    _confetti.ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    _confetti.particles = [];
+    const colors = ['#f94144','#f3722c','#f9c74f','#90be6d','#577590'];
+    for(let i=0;i<160;i++){
+        _confetti.particles.push({
+            x: Math.random()*canvas.width,
+            y: Math.random()*-canvas.height,
+            vx: (Math.random()-0.5)*6,
+            vy: Math.random()*5+2,
+            r: Math.random()*8+4,
+            color: colors[Math.floor(Math.random()*colors.length)],
+            rot: Math.random()*360,
+            vr: (Math.random()-0.5)*10
+        });
+    }
+    function frame(){
+        const ctx = _confetti.ctx;
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        for(const p of _confetti.particles){
+            p.x += p.vx; p.y += p.vy; p.vy += 0.12; p.rot += p.vr;
+            ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot*Math.PI/180);
+            ctx.fillStyle = p.color; ctx.fillRect(-p.r/2,-p.r/2,p.r,p.r*0.6);
+            ctx.restore();
+        }
+        _confetti.particles = _confetti.particles.filter(p=>p.y < canvas.height + 60);
+        _confetti.raf = requestAnimationFrame(frame);
+    }
+    frame();
+    _confetti.timer = setTimeout(stopConfetti, 4200);
+}
+function stopConfetti(){
+    if(_confetti.raf) cancelAnimationFrame(_confetti.raf);
+    if(_confetti.ctx && _confetti.canvas) _confetti.ctx.clearRect(0,0,_confetti.canvas.width,_confetti.canvas.height);
+    clearTimeout(_confetti.timer);
+    _confetti.particles = [];
+}
+
+// Play again button
+const playAgainBtn = document.getElementById('playAgain');
+if(playAgainBtn){
+    playAgainBtn.addEventListener('click', ()=>{
+        hideWinScreen();
+        startbutton.disabled = true;
+        messageArea.textContent = 'Good luck!';
+        startGame();
+    });
 }
